@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>BITS Digital Grading Console</title>
+  <meta name="description"
+    content="Upload a marks sheet, tune grade bands against the real distribution and export a clean grade sheet. Runs entirely in your browser.">
+  <meta name="theme-color" content="#5e49e2">
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%235e49e2'/%3E%3Crect x='8' y='17' width='4' height='7' rx='1.5' fill='%23fff'/%3E%3Crect x='14' y='12' width='4' height='12' rx='1.5' fill='%23fff'/%3E%3Crect x='20' y='8' width='4' height='16' rx='1.5' fill='%232ed6a5'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap">
+  <link rel="stylesheet" href="src/css/styles.css">
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to the grading workspace</a>
+
+  <div class="shell" id="app">
+
+    <!-- ===================================================== PORTAL HEADER -->
+    <header class="topbar">
+      <a class="tb-logo" href="#main" aria-label="BITS Pilani Digital, skip to the grading workspace">
+        <img
+          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 56' fill='none'%3E%3Crect width='220' height='56' rx='12' fill='var(--logo-plate)'/%3E%3Crect x='12' y='12' width='14' height='32' rx='4' fill='%232B296D'/%3E%3Crect x='30' y='20' width='14' height='24' rx='4' fill='%232B296D'/%3E%3Crect x='48' y='12' width='14' height='32' rx='4' fill='%232B296D'/%3E%3Crect x='66' y='20' width='14' height='24' rx='4' fill='%232B296D'/%3E%3Crect x='88' y='8' width='6' height='40' rx='2' fill='%235E49E2'/%3E%3Ctext x='100' y='36' font-family='DM Sans%2C ui-sans-serif%2C system-ui' font-weight='700' font-size='22' fill='%232B296D'%3EBITS Digital%3C/text%3E%3C/svg%3E"
+          alt="BITS Pilani Digital logo" width="160" height="40" class="tb-logo-img">
+      </a>
+      <nav class="tb-nav" aria-label="Application navigation">
+        <button class="tb-btn" id="btnDark" aria-label="Toggle dark mode" title="Toggle dark / light mode"
+          aria-pressed="false">
+          <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+          </svg>
+        </button>
+        <button class="tb-btn tb-btn--accent" id="btnHelp" aria-label="Help" title="Help & keyboard shortcuts"
+          aria-expanded="false" aria-controls="dlgHelp">
+          <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <path d="M12 17h.01" />
+          </svg>
+        </button>
+      </nav>
+    </header>
+    <!-- /PORTAL HEADER -->
+
+    <!-- ===================================================== MAIN LAYOUT -->
+    <main class="workspace" id="main" role="main">
+
+      <!-- ------------------------------------------------- STEP RAIL -->
+      <nav class="step-rail" aria-label="Progress steps">
+        <ol class="rail-list" role="list">
+          <li class="rail-item rail-item--active" data-step="1" id="railStep1">
+            <button class="rail-btn" aria-current="step" aria-describedby="railStep1Desc">
+              <span class="rail-num" aria-hidden="true">1</span>
+              <span class="rail-label">Upload</span>
+            </button>
+            <p class="rail-desc" id="railStep1Desc">Upload a marks sheet (.xlsx, .csv)</p>
+          </li>
+          <li class="rail-item" data-step="2" id="railStep2">
+            <button class="rail-btn" disabled aria-describedby="railStep2Desc">
+              <span class="rail-num" aria-hidden="true">2</span>
+              <span class="rail-label">Map columns</span>
+            </button>
+            <p class="rail-desc" id="railStep2Desc">Identify ID, name and marks columns</p>
+          </li>
+          <li class="rail-item" data-step="3" id="railStep3">
+            <button class="rail-btn" disabled aria-describedby="railStep3Desc">
+              <span class="rail-num" aria-hidden="true">3</span>
+              <span class="rail-label">Grade</span>
+            </button>
+            <p class="rail-desc" id="railStep3Desc">Set grade bands and review the distribution</p>
+          </li>
+          <li class="rail-item" data-step="4" id="railStep4">
+            <button class="rail-btn" disabled aria-describedby="railStep4Desc">
+              <span class="rail-num" aria-hidden="true">4</span>
+              <span class="rail-label">Review & Export</span>
+            </button>
+            <p class="rail-desc" id="railStep4Desc">Inspect the grade sheet and export</p>
+          </li>
+        </ol>
+      </nav>
+      <!-- /STEP RAIL -->
+
+      <!-- ------------------------------------------------- WORKSPACE PANEL -->
+      <div class="ws-panel">
+
+        <!-- =============================== STEP 1: UPLOAD -->
+        <section class="ws-section" id="step1" aria-labelledby="h2Step1">
+          <div class="ws-section-head">
+            <h2 class="ws-section-title" id="h2Step1">Upload marks sheet</h2>
+            <p class="ws-section-sub">Accepts <strong>.xlsx</strong>, <strong>.xls</strong>, and
+              <strong>.csv</strong> files. Your data never leaves your browser.</p>
+          </div>
+
+          <!-- Drop zone -->
+          <div class="drop-zone" id="dropZone" role="button" tabindex="0"
+            aria-label="Drop zone: drag and drop a marks sheet here or click to browse files"
+            aria-describedby="dropHint">
+            <div class="dz-inner">
+              <div class="dz-icon" aria-hidden="true">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+              </div>
+              <p class="dz-heading">Drag &amp; drop your marks sheet</p>
+              <p class="dz-sub" id="dropHint">or <button class="link-btn" id="btnBrowse"
+                  aria-label="Browse and select a file">click to browse</button></p>
+              <p class="dz-accept">Accepts .xlsx · .xls · .csv</p>
+            </div>
+            <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" class="dz-input" aria-hidden="true"
+              tabindex="-1">
+          </div>
+
+          <!-- Parse error banner -->
+          <div class="banner banner--danger" id="bannerParseError" hidden role="alert" aria-live="assertive">
+            <svg class="banner-icon" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span id="bannerParseErrorMsg">Could not parse the file.</span>
+          </div>
+
+          <!-- File preview card -->
+          <div class="file-card" id="fileCard" hidden>
+            <div class="file-card-icon" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <line x1="10" y1="9" x2="8" y2="9" />
+              </svg>
+            </div>
+            <div class="file-card-info">
+              <p class="file-card-name" id="fileName">–</p>
+              <p class="file-card-meta" id="fileMeta">–</p>
+            </div>
+            <button class="file-card-remove" id="btnRemoveFile" aria-label="Remove the current file and start over">
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Sheet selector (xlsx multi-sheet) -->
+          <div class="field-row" id="sheetRow" hidden>
+            <label class="field-label" for="sheetSelect">Sheet</label>
+            <select class="field-select" id="sheetSelect" aria-describedby="sheetSelectHint"></select>
+            <p class="field-hint" id="sheetSelectHint">Select which sheet contains the marks.</p>
+          </div>
+
+          <!-- Data preview table -->
+          <div class="preview-wrap" id="previewWrap" hidden>
+            <div class="preview-scroll" role="region" aria-label="Preview of the uploaded data" tabindex="0">
+              <table class="preview-table" id="previewTable" aria-live="polite">
+                <caption class="sr-only">Preview of the first rows of the uploaded file</caption>
+                <thead id="previewHead"></thead>
+                <tbody id="previewBody"></tbody>
+              </table>
+            </div>
+            <p class="preview-note" id="previewNote"></p>
+          </div>
+
+          <div class="ws-actions">
+            <button class="btn btn--primary" id="btnStep1Next" disabled>
+              Next: Map columns
+              <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14m-7-7 7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </section>
+        <!-- /STEP 1 -->
+
+        <!-- =============================== STEP 2: MAP COLUMNS -->
+        <section class="ws-section" id="step2" hidden aria-labelledby="h2Step2">
+          <div class="ws-section-head">
+            <h2 class="ws-section-title" id="h2Step2">Map columns</h2>
+            <p class="ws-section-sub">Tell the console which columns hold the student ID, name and marks.</p>
+          </div>
+
+          <div class="map-grid" id="mapGrid">
+            <!-- col-mapper cards injected by JS -->
+          </div>
+
+          <div class="ws-actions ws-actions--space">
+            <button class="btn btn--ghost" id="btnStep2Back">
+              <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5m7 7-7-7 7-7" />
+              </svg>
+              Back
+            </button>
+            <button class="btn btn--primary" id="btnStep2Next" disabled>
+              Next: Set grade bands
+              <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14m-7-7 7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </section>
+        <!-- /STEP 2 -->
+
+        <!-- =============================== STEP 3: GRADE BANDS -->
+        <section class="ws-section" id="step3" hidden aria-labelledby="h2Step3">
+          <div class="ws-section-head">
+            <h2 class="ws-section-title" id="h2Step3">Set grade bands</h2>
+            <p class="ws-section-sub">Drag the handles or type thresholds to adjust how marks are converted to
+              grades. The histogram updates live.</p>
+          </div>
+
+          <!-- Statistics bar -->
+          <div class="stat-bar" id="statBar" role="group" aria-label="Summary statistics">
+            <dl class="stat-list">
+              <div class="stat-item">
+                <dt class="stat-label">N</dt>
+                <dd class="stat-val" id="statN">–</dd>
+              </div>
+              <div class="stat-item">
+                <dt class="stat-label">Mean</dt>
+                <dd class="stat-val" id="statMean">–</dd>
+              </div>
+              <div class="stat-item">
+                <dt class="stat-label">Median</dt>
+                <dd class="stat-val" id="statMedian">–</dd>
+              </div>
+              <div class="stat-item">
+                <dt class="stat-label">SD</dt>
+                <dd class="stat-val" id="statSD">–</dd>
+              </div>
+              <div class="stat-item">
+                <dt class="stat-label">Min</dt>
+                <dd class="stat-val" id="statMin">–</dd>
+              </div>
+              <div class="stat-item">
+                <dt class="stat-label">Max</dt>
+                <dd class="stat-val" id="statMax">–</dd>
+              </div>
+              <div class="stat-item">
+                <dt class="stat-label">Max marks</dt>
+                <dd class="stat-val" id="statMaxMarks">–</dd>
+              </div>
+            </dl>
+          </div>
+
+          <!-- Histogram -->
+          <div class="histogram-wrap">
+            <div class="histogram" id="histogram" aria-label="Marks distribution histogram" role="img"></div>
+          </div>
+
+          <!-- Band editor -->
+          <div class="band-editor" id="bandEditor" aria-label="Grade band editor">
+            <!-- band rows injected by JS -->
+          </div>
+
+          <!-- Preset bar -->
+          <div class="preset-bar" role="group" aria-label="Grade preset templates">
+            <span class="preset-label">Presets:</span>
+            <div class="preset-btns">
+              <button class="preset-btn" data-preset="absolute" title="Absolute grading: fixed % cutoffs">Absolute
+                %</button>
+              <button class="preset-btn" data-preset="relative" title="Relative grading: cutoffs at mean ± σ
+multiples">Relative (σ)</button>
+              <button class="preset-btn" data-preset="percentile"
+                title="Percentile grading: cutoffs at top-N% boundaries">Percentile</button>
+            </div>
+          </div>
+
+          <div class="ws-actions ws-actions--space">
+            <button class="btn btn--ghost" id="btnStep3Back">
+              <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5m7 7-7-7 7-7" />
+              </svg>
+              Back
+            </button>
+            <button class="btn btn--primary" id="btnStep3Next">
+              Next: Review &amp; Export
+              <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14m-7-7 7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </section>
+        <!-- /STEP 3 -->
+
+        <!-- =============================== STEP 4: REVIEW & EXPORT -->
+        <section class="ws-section" id="step4" hidden aria-labelledby="h2Step4">
+          <div class="ws-section-head">
+            <h2 class="ws-section-title" id="h2Step4">Review &amp; Export</h2>
+            <p class="ws-section-sub">Check the final grade sheet. Use the search box to find a student. When ready,
+              export to CSV or back to Excel.</p>
+          </div>
+
+          <!-- Data issues banner -->
+          <div class="banner banner--warn" id="bannerIssues" hidden role="alert" aria-live="polite">
+            <svg class="banner-icon" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+            <div>
+              <strong>Data quality issues detected</strong>
+              <div id="issueList" class="issue-list"></div>
+            </div>
+          </div>
+
+          <!-- Search -->
+          <div class="search-row">
+            <div class="search-field">
+              <svg class="search-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input type="search" class="search-input" id="gradeSearch" placeholder="Search by ID or name…"
+                aria-label="Search grade sheet by student ID or name" autocomplete="off" spellcheck="false">
+            </div>
+          </div>
+
+          <!-- Grade sheet table -->
+          <div class="gs-wrap" role="region" aria-label="Grade sheet table" tabindex="0">
+            <table class="gs-table" id="gsTable" aria-live="polite" aria-rowcount="-1">
+              <caption class="sr-only">Final grade sheet with student ID, name, marks, and assigned grade</caption>
+              <thead id="gsHead"></thead>
+              <tbody id="gsBody"></tbody>
+            </table>
+          </div>
+          <div class="gs-pagination" id="gsPagination" role="navigation" aria-label="Grade sheet pagination"></div>
+
+          <div class="ws-actions ws-actions--space">
+            <button class="btn btn--ghost" id="btnStep4Back">
+              <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5m7 7-7-7 7-7" />
+              </svg>
+              Back
+            </button>
+            <div class="export-btns">
+              <button class="btn btn--outline" id="btnExportCSV">
+                <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Export CSV
+              </button>
+              <button class="btn btn--primary" id="btnExportXLSX">
+                <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Export Excel
+              </button>
+            </div>
+          </div>
+        </section>
+        <!-- /STEP 4 -->
+
+      </div>
+      <!-- /WORKSPACE PANEL -->
+
+      <!-- ------------------------------------------------- SIGN-OFF COLUMN -->
+      <aside class="signoff" aria-label="Session sign-off and summary">
+
+        <!-- Course card -->
+        <div class="signoff-card" id="courseCard">
+          <div class="course-tint" id="courseTint" aria-hidden="true"></div>
+          <div class="course-body">
+            <p class="course-label">Course</p>
+            <p class="course-name" id="courseName">–</p>
+            <p class="course-id" id="courseId">–</p>
+          </div>
+        </div>
+
+        <!-- Instructor details -->
+        <div class="signoff-section">
+          <h3 class="signoff-heading">Instructor details</h3>
+          <div class="field-stack">
+            <div class="field-row field-row--vert">
+              <label class="field-label" for="instrName">Name</label>
+              <input class="field-input" type="text" id="instrName" placeholder="Dr. …"
+                aria-describedby="instrNameHint">
+              <p class="field-hint sr-only" id="instrNameHint">Instructor name for the sign-off record</p>
+            </div>
+            <div class="field-row field-row--vert">
+              <label class="field-label" for="instrId">Employee ID</label>
+              <input class="field-input" type="text" id="instrId" placeholder="EMP-XXXXX"
+                aria-describedby="instrIdHint">
+              <p class="field-hint sr-only" id="instrIdHint">Instructor employee ID for the sign-off record</p>
+            </div>
+            <div class="field-row field-row--vert">
+              <label class="field-label" for="examType">Exam type</label>
+              <select class="field-select" id="examType" aria-describedby="examTypeHint">
+                <option value="Mid-Semester">Mid-Semester</option>
+                <option value="End-Semester" selected>End-Semester</option>
+                <option value="Quiz">Quiz</option>
+                <option value="Assignment">Assignment</option>
+                <option value="Lab">Lab</option>
+                <option value="Project">Project</option>
+                <option value="Other">Other</option>
+              </select>
+              <p class="field-hint sr-only" id="examTypeHint">Type of examination or assessment</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Session timestamp -->
+        <div class="signoff-section">
+          <h3 class="signoff-heading">Session</h3>
+          <p class="session-time" id="sessionTime" aria-live="polite">–</p>
+        </div>
+
+        <!-- Grade mix mini-chart -->
+        <div class="signoff-section" id="gradeMixSection" hidden>
+          <h3 class="signoff-heading">Grade mix</h3>
+          <div class="grade-mix" id="gradeMix" role="list" aria-label="Grade distribution summary"></div>
+        </div>
+
+      </aside>
+      <!-- /SIGN-OFF COLUMN -->
+
+    </main>
+    <!-- /MAIN LAYOUT -->
+
+  </div>
+  <!-- /SHELL -->
+
+  <!-- ===================================================== HELP DIALOG -->
+  <dialog class="dialog" id="dlgHelp" aria-labelledby="dlgHelpTitle" aria-modal="true">
+    <div class="dialog-inner">
+      <div class="dialog-head">
+        <h2 class="dialog-title" id="dlgHelpTitle">Help &amp; shortcuts</h2>
+        <button class="dialog-close" id="btnHelpClose" aria-label="Close help dialog">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <h3 class="dlg-subhead">Keyboard shortcuts</h3>
+        <dl class="shortcut-list">
+          <div class="shortcut-row">
+            <dt><kbd>?</kbd></dt>
+            <dd>Open this help dialog</dd>
+          </div>
+          <div class="shortcut-row">
+            <dt><kbd>Escape</kbd></dt>
+            <dd>Close dialog</dd>
+          </div>
+          <div class="shortcut-row">
+            <dt><kbd>Tab</kbd></dt>
+            <dd>Navigate interactive elements</dd>
+          </div>
+        </dl>
+        <h3 class="dlg-subhead">About</h3>
+        <p>BITS Digital Grading Console runs entirely in your browser. No data is sent to any server. Supports
+          <strong>.xlsx</strong>, <strong>.xls</strong>, and <strong>.csv</strong> marks sheets.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ===================================================== TOAST -->
+  <div class="toast-region" id="toastRegion" role="status" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- ===================================================== SVG SPRITE -->
+  <svg class="svg-sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-check" viewBox="0 0 24 24">
+      <polyline points="20 6 9 17 4 12" />
+    </symbol>
+    <symbol id="i-warn" viewBox="0 0 24 24">
+      <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+      <line x1="12" y1="9" x2="12" y2="13" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="16" x2="12" y2="12" />
+      <line x1="12" y1="8" x2="12.01" y2="8" />
+    </symbol>
+    <symbol id="i-danger" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 24 24">
+      <path d="M12 19V5m0 0-5.5 5.5M12 5l5.5 5.5" />
+    </symbol>
+  </svg>
+
+  <!-- Scripts -->
+  <script src="src/js/core.js"></script>
+  <script src="src/js/app.js"></script>
+</body>
+
+</html>
